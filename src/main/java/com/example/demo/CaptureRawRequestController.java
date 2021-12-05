@@ -12,7 +12,7 @@ import org.springframework.web.client.RestTemplate;
 public class CaptureRawRequestController {
 
 	@Autowired
-	RestTemplate restTemplate;
+	public RestTemplate restTemplate;
 	
 	@PostMapping(path="/processRequestV2", consumes = "application/json", produces = "application/json")
 	public ResponseEntity<ResponseMSOne> processRequestV2(@RequestBody RequestMSOne requestMSOne) {
@@ -30,6 +30,12 @@ public class CaptureRawRequestController {
 			ResponseEntity<ResponseMSTwo> response3 =restTemplate.postForEntity(
 					"http://localhost:8081/validateRequest",
 					requestMSTwo, ResponseMSTwo.class);
+			
+			if(null==response3) {
+				System.out.println("Something went wrong, Backend service is down / not reachable");
+			}
+			
+			System.out.println("Response from Backend Microservice is " + response3.getStatusCode().toString());
 			
 			responseMSOne.setProductDescription(response3.getBody().getItemDescription());
 			responseEntity = new ResponseEntity<ResponseMSOne>(responseMSOne, HttpStatus.ACCEPTED);
